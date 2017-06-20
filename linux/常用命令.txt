@@ -1,0 +1,5 @@
+查看进程
+例：ps -aux | grep php（-aux显示所有状态）
+
+终止进程
+例：kill -7483[PID]
