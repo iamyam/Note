@@ -1,0 +1,55 @@
+基本的查询优化：
+
+	尽量减少*的使用
+	减少在查询字段进行计算
+	用程序控制，减少事务的使用
+	减少！=或<>的使用，防止全表扫描
+	避免 like 的使用，可以在后面增加%通配符。如果必须，考虑全文索引
+	in 和 not in尽量少的使用 对于连续数值可以的话用between and
+	left join时 应该用小结果集驱动大结果集
+	排序字段上面尽量建立索引
+	只需要返回一条数据时 	使用limit1
+	在表连接字段上面建立索引
+
+explain的用法：
+
+	select_type(select的类型)：
+		1、simple              简单类型 没有union和子查询
+		2、primary             最外边的select，在有子查询的语句中
+		3、union				  
+		4、dependent union 
+		5、union result
+
+	type：
+		1、system              表仅有一行，可忽略
+		2、const				  用到primary key 或者unique，可以理解为最优情况   
+		3、eq_ref              表连接处使用到的索引并且是primary key 或者unique
+		4、ref                 可以理解为正常情况下使用索引并且查询出最少行
+		5、ref_or_null         专门查询mysql字段中为null的情况而做的优化
+		6、index_merge         该联接类型表示使用了索引合并优化方法。在这种情况下，key列包含了使用的索引的清单，key_len包含了使用的索引的最长的关键元素
+		7、unique_subquery 
+		8、index_subquery
+		9、range               范围索引，比如between and 或者in （连续范围）
+		10、index              读索引树，比all好，all是去硬盘读，index是在索引中读取的
+		11、all				  最慢的全表查询
+
+	possible_keys：
+		可能使用到的索引
+	
+	key：
+		实际情况中使用到的索引
+	
+	key_len：
+		mysql使用索引的长度
+
+	ref：
+		ref列显示使用哪个列或常数与key一起从表中选择行
+
+	rows：
+		显示MYSQL执行查询的行数，简单且重要，数值越大越不好，说明没有用好索引
+
+	Extra(包含了额外的其它信息)：
+		1、Using index         覆盖索引 MySQL可以利用索引返回select列表中的字段，而不必根据索引再次读取数据文件
+		2、Using where         
+		3、Using temporary     临时表 常见于排序和分组查询
+		4、Using filesort      文件排序 mysql无法利用索引进行排序       
