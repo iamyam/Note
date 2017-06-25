@@ -1,0 +1,6 @@
+五种数据类型：
+	string
+	hash
+	list
+	有序set
+	无序set
