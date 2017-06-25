@@ -34,5 +34,7 @@ websocket：
 
 	tcp为本机设置一个端口 然后嵌入ip包写入发送/接收方ip地址 然后嵌入以太网写入双方mac地址 1500字节一个包
 
-	Google接受到之后把数据包拼接，读出里面的http请求，然后找到nginx服务器 .php解析动态语言 调用fastcgi执行php脚本 然后返回结果集，在浏览器渲染。
+	Google接受到之后把数据包拼接，读出里面的http请求，然后找到nginx服务器 .php解析动态语言 调用fastcgi（注1）执行php脚本 fast_pass将用户请求发送给php-fpm，如果是静态资源nginx直接返回，php-fpm将资源给php解释器wrpper，然后返回结果集，在浏览器渲染。
 	
+
+	（注1）fastCgi 会先启一个 master，解析配置文件，初始化执行环境，然后再启动多个worker。当请求过来时，master会传递给一个worker，然后立即可以接受下一个请求。这样就避免了重复的劳动，效率自然是高。而且当worker不够用时，master可以根据配置预先启动几个worker等着；当然空闲worker太多时，也会停掉一些，这样就提高了性能，也节约了资源。这就是 fastCgi 对进程的管理。
