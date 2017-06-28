@@ -1,5 +1,9 @@
-查看进程
-例：ps -aux | grep php（-aux显示所有状态）
+虏茅驴麓陆酶鲁脤
+脌媒拢潞ps -aux | grep php拢篓-aux脧脭脢戮脣霉脫脨脳麓脤卢拢漏
 
-终止进程
-例：kill -7483[PID]
+脰脮脰鹿陆酶鲁脤
+脌媒拢潞kill -9 [PID]
+
+鍐呭瓨浣跨敤鎯呭喌
+
+top [-u] [name]

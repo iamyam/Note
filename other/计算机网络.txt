@@ -34,7 +34,18 @@ websocket：
 
 	tcp为本机设置一个端口 然后嵌入ip包写入发送/接收方ip地址 然后嵌入以太网写入双方mac地址 1500字节一个包
 
-	Google接受到之后把数据包拼接，读出里面的http请求，然后找到nginx服务器 .php解析动态语言 调用fastcgi（注1）执行php脚本 fast_pass将用户请求发送给php-fpm，如果是静态资源nginx直接返回，php-fpm将资源给php解释器wrpper，然后返回结果集，在浏览器渲染。
+	Google接受到之后把数据包拼接，读出里面的http请求，然后找到nginx服务器 .php解析动态语言调用执行php脚本fastcgi_pass将用户请求发送给fastcgi（注1），如果是静态资源nginx直接返回，fastcgi将资源给php解释器wrpper，然后返回结果集，在浏览器渲染。
 	
-
 	（注1）fastCgi 会先启一个 master，解析配置文件，初始化执行环境，然后再启动多个worker。当请求过来时，master会传递给一个worker，然后立即可以接受下一个请求。这样就避免了重复的劳动，效率自然是高。而且当worker不够用时，master可以根据配置预先启动几个worker等着；当然空闲worker太多时，也会停掉一些，这样就提高了性能，也节约了资源。这就是 fastCgi 对进程的管理。
+	（注2）php-fpm是fastcgi的管理器，负责调度
+
+
+	到达服务器整体工作流程：
+    1)、php-fpm自身初始化，启动主进程php-fpm和启动start_servers个CGI子进程。主进程php-fpm主要是管理fastcgi子进程，监听9000端口。fastcgi子进程等待来自Web Server的连接。
+    2)、当客户端请求到达Web Server Nginx是时，Nginx通过location指令，将所有以php为后缀的文件都交给127.0.0.1:9000来处理，即Nginx通过		location指令，将所有以php为后缀的文件都交给127.0.0.1:9000来处理。
+	3)、FastCGI进程管理器PHP-FPM选择并连接到一个子进程CGI解释器。Web server将CGI环境变量和标准输入发送到FastCGI子进程。
+	4)、FastCGI子进程完成处理后将标准输出和错误信息从同一连接返回Web Server。当FastCGI子进程关闭连接时，请求便告处理完成。
+	5)、FastCGI子进程接着等待并处理来自FastCGI进程管理器（运行在 WebServer中）的下一个连接。
+
+进程和线程：
+	cpu在任何时候都只能运行一个进程。一个进程可以包括多个线程
