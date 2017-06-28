@@ -5,5 +5,4 @@ ps -aux | grep php
 kill -9 [PID]
 
 内存使用情况
-
 top [-u] [name]
