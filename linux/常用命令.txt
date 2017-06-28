@@ -1,9 +1,8 @@
-²é¿´½ø³Ì
-Àý£ºps -aux | grep php£¨-auxÏÔÊ¾ËùÓÐ×´Ì¬£©
+查看进程
+ps -aux | grep php
 
-ÖÕÖ¹½ø³Ì
-Àý£ºkill -9 [PID]
+杀死进程
+kill -9 [PID]
 
 内存使用情况
-
 top [-u] [name]
