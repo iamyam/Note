@@ -1,0 +1,89 @@
+public/index.php
+
+require __DIR__.'/../bootstrap/autoload.php';
+
+1、 定义 LARAVEL_START 初始时间常量
+2、 require __DIR__.'/../vendor/autoload.php'
+
+这个文件是 Composer 的 class loader , 此文件会注册 Laravel 中所有的 classes。这样我们就不用自己 include class。
+3、compile.php
+
+这个文件是把最常用的 classes 先 compile 好，有点 cache 的意思。
+4、Patchwork\Utf8\Bootup::initMbstring();
+
+这是一个处理 UTF-8 字符串的 Library
+5、Illuminate\Support\ClassLoader::register();
+
+因为在最开始就已经使用到 composer 的 ClassLoader ，这个 ClassLoader 是 laravel 本身的 ClassLoader。如果有任何档案因为任何原因没有被 Load 到 Composer ClassLoader 中， 我们可以使用这个 ClassLoader 来另外加载到 spl_autoload_register 中。
+此外 ClassLoader 可以用在 application 的任何地方。
+6、Illuminate\Workbench\Starter::start($workbench);
+
+$workbench 为 workbench 文件夹的路径。
+方法会读取所有 workbench 中所有文件名为 autoload.php 并且 require_once 这些 autoload.php。这样在 Laravel 中就可以正确的调用在 workbench 文件夹中的扩展包。
+$app = require_once .../bootstrap/start.php
+
+1、$app = new Illuminate\Foundation\Application
+
+实例化 application 本身。
+2、$app->detectEnvironment ( 监测运行环境 )
+
+根据运行环境的 hostname 来读取对应的 config file
+3、$app->bindInstallPaths(require ...'/paths.php');
+
+这行的 paths.php 保存一些常用的路径：
+
+public path
+storage path
+app path
+base path
+4、$framework = $app['path.base'].'/vendor/laravel/framework/src'
+
+$framework 中存放框架的路径。
+5、require $framework.'/Illuminate/Foundation/start.php;'
+
+读取框架的 start.php
+
+动态的调整错误信息，将所有的 PHP 错误都回传
+读取 mycrypt 扩展
+将必须的 classes 都 load 进来
+
+Illuminate\Http\Request Illuminate\Support\Facades\Facade Illuminate\Foundation\AliasLoader Illuminate\Config\EnvironmentVariables Illuminate\Config\Repository
+5.1 、$app->instance('app', $app);
+
+将 $app 绑定到 ioc Container 中，instance 方法是将现有的实例跟 ioc 做绑定。
+5.2、$app['env'] = $env = $testEnvironment
+
+监测是否为 phpunit test 执行，如果是的话就读取正确的配置文件。
+5.3、Facade::clearResolvedInstances()跟 Facade::setFacadeApplication($app)
+
+先清除 Facade 中的 Instances
+然后再设置 Facade app
+5.4、$app->registerCoreContainerAliases();
+
+因为一开始是使用比较短的名字来标识 IoC Container 每一个核心的模块，这里是将核心模块用完整名称来标识，完整的名称可以让 Dependency Injection 好处理。
+5.5、with($envVariable = EnvironmentVariables($app->getEnvironmentVariablesLoader()))->load($env);
+
+读取所有的 $_ENV 跟 $_SERVER 变量到程序中。
+5.6、注册 Configuration Repository 到 IoC Container 中
+
+5.7、$app->startExceptionHandling();
+
+使用 Laravel 本身的异常处理。
+5.8、if($env!= 'testing') ini_set('display_errors', 'off')
+
+关闭 PHP 本身的错误处理
+5.9、设置程序 timezone
+
+5.10、AliasLoad::getInstance($aliases)->register();
+
+$alias 里面为一个数组，键为所有模块的 alias, 值为 alias 的完整名称。 register 所有 alias 到 spl_autoload_register 中。
+5.11、 providers = $config['providers']; 跟 $app->getProviderRepository()->load($app, $providers);
+
+读取所有核心需要的 service providers，比如 Session，Cache…
+5.12、 $app->booted(function() use ($app, $env) {...})
+
+这个 booted 方法是给 laravel 一个最后的机会去复写任何已经存在的 IoC 绑定，这个方法里面已经预设触发读取的一些文件：
+
+global.php
+{$env}.php
+routes.php
