@@ -15,7 +15,7 @@
 
 
 		<?php
-			namespace Parents;//到达parents这个领域 所以下面要写demo\Person();
+			namespace Parents;//到达parents这个领域 并且相当于自动引入了该领域下面的命名空间 所以下面要写demo\Person();
 			namespace Parents\demo;//这么写说明到达parents\demo这个领域 new时可以直接用new Person()即可
 
 			require_once('demo.php');
