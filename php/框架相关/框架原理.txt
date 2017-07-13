@@ -14,8 +14,7 @@ require __DIR__.'/../bootstrap/autoload.php';
 这是一个处理 UTF-8 字符串的 Library
 5、Illuminate\Support\ClassLoader::register();
 
-因为在最开始就已经使用到 composer 的 ClassLoader ，这个 ClassLoader 是 laravel 本身的 ClassLoader。如果有任何档案因为任何原因没有被 Load 到 Composer ClassLoader 中， 我们可以使用这个 ClassLoader 来另外加载到 spl_autoload_register 中。
-此外 ClassLoader 可以用在 application 的任何地方。
+因为在最开始就已经使用到 composer 的 ClassLoader ，这个 ClassLoader 是 laravel 本身的ClassLoader。如果有任何档案因为任何原因没有被 Load 到 Composer ClassLoader 中， 我们可以使用这个 ClassLoader 来另外加载到 spl_autoload_register 中。此外 ClassLoader 可以用在 application 的任何地方。
 6、Illuminate\Workbench\Starter::start($workbench);
 
 $workbench 为 workbench 文件夹的路径。
