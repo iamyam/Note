@@ -1,4 +1,4 @@
-命名空间
+
 	use和include/require不一样。
 
 	use只是可以使用namespace领域内的东西，而不是真正的把文件引入，直接new会说class not found，真正的使用还是需要自动加载啥的。
